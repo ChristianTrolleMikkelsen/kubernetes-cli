@@ -1,1 +1,22 @@
+group="Test"
+cluster="Templafy"
+
 alias k='kubectl'
+alias kstop='az aks stop --resource-group $group --name $cluster'
+alias kstart='az aks start --resource-group $group --name $cluster'
+
+function ensure-test-cluster-is-running
+{
+    echo ""
+    echo "Checking if kubernetes cluster '$cluster' is ready..."
+    state=$(az aks show --resource-group $group --name $cluster | grep code)
+
+    if [[ "$state" == *"Running"* ]]; then
+        echo "   - Ready "
+    else
+        echo "   - Not ready. Starting..."
+        kstart
+    fi
+}
+
+ensure-test-cluster-is-running
